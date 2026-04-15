@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NSF GRFP 2026 &mdash; Awardee Search</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --border: #e2e2e2;
+    --accent: #0f5fa8;
+    --award: #0f7a3a;
+    --hm: #8a6d00;
+    --panel: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.4;
+  }
+  header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px 16px;
+  }
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  header a { color: var(--accent); }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px 48px;
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  #q {
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--panel);
+  }
+  #q:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .filter {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .filter select {
+    font-size: 14px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--panel);
+  }
+  .stats {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .stats b { color: var(--fg); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f3f4f6;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th.sorted::after {
+    content: attr(data-arrow);
+    color: var(--accent);
+    margin-left: 4px;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:hover { background: #f9fafb; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .badge.A { background: #e7f5ec; color: var(--award); }
+  .badge.H { background: #fdf5d9; color: var(--hm); }
+  mark {
+    background: #fff3b0;
+    color: inherit;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+  .field-broad { color: var(--muted); font-size: 12px; }
+  .empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .pager {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+  .pager button {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  footer {
+    margin-top: 32px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+  @media (max-width: 720px) {
+    .controls { grid-template-columns: 1fr; }
+    thead th, tbody td { padding: 6px 8px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>NSF GRFP 2026 Awardee Search</h1>
+  <p>
+    Scraped from
+    <a href="https://www.research.gov/grfp/AwardeeList.do?method=loadAwardeeList" target="_blank" rel="noopener">research.gov/grfp</a>.
+    Search across name, institution, and field of study.
+  </p>
+</header>
+
+<div class="container">
+  <div class="controls">
+    <input id="q" type="search" placeholder="Search by name, institution, field, keyword&hellip; (e.g. MIT, neuroscience, Stanford)" autocomplete="off" spellcheck="false" />
+    <div class="filter">
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="">All</option>
+        <option value="A">Awarded only</option>
+        <option value="H">Honorable Mention only</option>
+      </select>
+    </div>
+    <div class="filter">
+      <label for="field">Field:</label>
+      <select id="field"><option value="">All fields</option></select>
+    </div>
+    <div class="filter">
+      <label for="pagesize">Per page:</label>
+      <select id="pagesize">
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="250">250</option>
+        <option value="500">500</option>
+        <option value="all">All</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stats" id="stats">Loading&hellip;</div>
+
+  <div id="results"></div>
+
+  <div class="pager" id="pager" hidden>
+    <button id="prev">&laquo; Prev</button>
+    <span id="pageinfo"></span>
+    <button id="next">Next &raquo;</button>
+  </div>
+
+  <footer>
+    Data snapshot: 2026-04-14 &middot; 2,599 awarded &middot; 1,440 honorable mentions.
+    Source of truth is research.gov. This page is unaffiliated with NSF.
+  </footer>
+</div>
+
+<script>
+(() => {
+  const state = {
+    data: [],
+    filtered: [],
+    query: "",
+    tokens: [],
+    typeFilter: "",
+    fieldFilter: "",
+    sortKey: "n",
+    sortDir: 1,
+    page: 0,
+    pageSize: 50,
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const qEl = $("q"), typeEl = $("type"), fieldEl = $("field"), pageSizeEl = $("pagesize");
+  const statsEl = $("stats"), resultsEl = $("results");
+  const pagerEl = $("pager"), prevEl = $("prev"), nextEl = $("next"), pageInfoEl = $("pageinfo");
+
+  fetch("awardees.json")
+    .then((r) => r.json())
+    .then((data) => {
+      state.data = data;
+      // Precompute a lowercase haystack for fast substring matching
+      for (const r of data) {
+        r._h = (r.n + " " + r.b + " " + r.fb + " " + r.fs + " " + r.c).toLowerCase();
+      }
+      populateFieldFilter(data);
+      applyFilters();
+    })
+    .catch((err) => {
+      statsEl.textContent = "Failed to load awardees.json: " + err;
+    });
+
+  function populateFieldFilter(data) {
+    const fields = [...new Set(data.map((r) => r.fb).filter(Boolean))].sort();
+    for (const f of fields) {
+      const o = document.createElement("option");
+      o.value = f; o.textContent = f;
+      fieldEl.appendChild(o);
+    }
+  }
+
+  function tokenize(q) {
+    return q.toLowerCase().split(/\s+/).map((t) => t.trim()).filter(Boolean);
+  }
+
+  function applyFilters() {
+    const tokens = state.tokens;
+    const tf = state.typeFilter;
+    const ff = state.fieldFilter;
+    const out = [];
+    for (const r of state.data) {
+      if (tf && r.t !== tf) continue;
+      if (ff && r.fb !== ff) continue;
+      let ok = true;
+      for (const tok of tokens) {
+        if (!r._h.includes(tok)) { ok = false; break; }
+      }
+      if (ok) out.push(r);
+    }
+    sortRows(out);
+    state.filtered = out;
+    state.page = 0;
+    render();
+  }
+
+  function sortRows(rows) {
+    const k = state.sortKey, d = state.sortDir;
+    rows.sort((a, b) => {
+      const av = (a[k] || "").toLowerCase();
+      const bv = (b[k] || "").toLowerCase();
+      if (av < bv) return -1 * d;
+      if (av > bv) return 1 * d;
+      return 0;
+    });
+  }
+
+  function escape(s) {
+    return s.replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function highlight(text) {
+    if (!state.tokens.length) return escape(text);
+    let esc = escape(text);
+    for (const tok of state.tokens) {
+      if (!tok) continue;
+      const re = new RegExp("(" + tok.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+      esc = esc.replace(re, "<mark>$1</mark>");
+    }
+    return esc;
+  }
+
+  function render() {
+    const n = state.filtered.length;
+    const total = state.data.length;
+    const awarded = state.filtered.filter((r) => r.t === "A").length;
+    const hm = n - awarded;
+
+    statsEl.innerHTML =
+      `Showing <b>${n.toLocaleString()}</b> of ${total.toLocaleString()} ` +
+      `(<b>${awarded.toLocaleString()}</b> awarded, <b>${hm.toLocaleString()}</b> honorable mention)`;
+
+    if (n === 0) {
+      resultsEl.innerHTML = '<div class="empty">No matches. Try fewer or different keywords.</div>';
+      pagerEl.hidden = true;
+      return;
+    }
+
+    const size = state.pageSize === "all" ? n : state.pageSize;
+    const pages = Math.max(1, Math.ceil(n / size));
+    if (state.page >= pages) state.page = pages - 1;
+    const start = state.page * size;
+    const slice = state.filtered.slice(start, start + size);
+
+    const headers = [
+      ["n", "Name"],
+      ["b", "Baccalaureate Institution"],
+      ["fs", "Field"],
+      ["c", "Current Institution"],
+      ["t", "Type"],
+    ];
+    let html = '<table><thead><tr>';
+    for (const [k, label] of headers) {
+      const cls = state.sortKey === k ? "sorted" : "";
+      const arrow = state.sortDir === 1 ? "\u2191" : "\u2193";
+      html += `<th class="${cls}" data-arrow="${arrow}" data-key="${k}">${label}</th>`;
+    }
+    html += "</tr></thead><tbody>";
+
+    for (const r of slice) {
+      html += "<tr>";
+      html += `<td>${highlight(r.n)}</td>`;
+      html += `<td>${highlight(r.b)}</td>`;
+      html += `<td><div class="field-broad">${highlight(r.fb)}</div>${highlight(r.fs)}</td>`;
+      html += `<td>${highlight(r.c)}</td>`;
+      const label = r.t === "A" ? "Awarded" : "HM";
+      html += `<td><span class="badge ${r.t}">${label}</span></td>`;
+      html += "</tr>";
+    }
+    html += "</tbody></table>";
+    resultsEl.innerHTML = html;
+
+    for (const th of resultsEl.querySelectorAll("th")) {
+      th.addEventListener("click", () => {
+        const k = th.dataset.key;
+        if (state.sortKey === k) state.sortDir *= -1;
+        else { state.sortKey = k; state.sortDir = 1; }
+        sortRows(state.filtered);
+        render();
+      });
+    }
+
+    pagerEl.hidden = pages <= 1;
+    prevEl.disabled = state.page === 0;
+    nextEl.disabled = state.page >= pages - 1;
+    pageInfoEl.textContent = `Page ${state.page + 1} of ${pages}`;
+  }
+
+  let debounce;
+  qEl.addEventListener("input", () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      state.query = qEl.value;
+      state.tokens = tokenize(state.query);
+      applyFilters();
+    }, 80);
+  });
+  typeEl.addEventListener("change", () => { state.typeFilter = typeEl.value; applyFilters(); });
+  fieldEl.addEventListener("change", () => { state.fieldFilter = fieldEl.value; applyFilters(); });
+  pageSizeEl.addEventListener("change", () => {
+    const v = pageSizeEl.value;
+    state.pageSize = v === "all" ? "all" : parseInt(v, 10);
+    state.page = 0;
+    render();
+  });
+  prevEl.addEventListener("click", () => { if (state.page > 0) { state.page--; render(); window.scrollTo(0, 0); } });
+  nextEl.addEventListener("click", () => { state.page++; render(); window.scrollTo(0, 0); });
+})();
+</script>
+</body>
+</html>
