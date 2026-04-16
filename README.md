@@ -1,6 +1,13 @@
 # NSF GRFP Awardee Search (1952–2026)
 
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://www.python.org/downloads/)
+[![uv](https://img.shields.io/badge/packaged%20with-uv-4b0082.svg)](https://docs.astral.sh/uv/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](#disclaimer)
+[![Data: research.gov](https://img.shields.io/badge/data-research.gov-lightgrey.svg)](https://www.research.gov/grfp/AwardeeList.do?method=loadAwardeeList)
+
 Every publicly listed NSF Graduate Research Fellowship Program awardee and honorable mention from 1952 through 2026, a DuckDB database over the full set, and a single-page website with keyword search, filters, and comparable trend charts.
+
+Built by [Christan Grant](https://ceg.me).
 
 ![Default view: a broad-field distribution chart and a 2021-2026 year-over-time chart above the paginated 2026 search results](screenshot.png)
 
@@ -43,16 +50,17 @@ The `awardees` table in `nsf_grfp.duckdb`:
 
 The field taxonomy is not consistent across decades. Expect variants like `Computer Science` vs `Computer and Information Science and Engineering` to appear as separate groups in the charts.
 
-## Clone
+## Clone and install
 
 ```sh
 gh repo clone cegme/nsfgrfp-search
 # or
 git clone https://github.com/cegme/nsfgrfp-search.git
 cd nsfgrfp-search
+uv sync
 ```
 
-The repo is self-contained: raw TSVs, the DuckDB database, the JSON payload, and the web UI are all checked in, so the site works immediately with no build step.
+`uv sync` resolves `pyproject.toml` and installs `duckdb`, `loguru`, and `requests` into a local `.venv`. Python 3.10 or newer is required. The repo ships the raw TSVs, DuckDB database, JSON payload, and web UI, so the site works immediately with no build step — `uv sync` is only needed to re-run the scrape or rebuild the database.
 
 ## Run locally
 
@@ -67,7 +75,7 @@ Open <http://127.0.0.1:8765>.
 ### Rebuild the DuckDB database and JSON payload
 
 ```sh
-uv run --with duckdb --with loguru python build_db.py
+uv run python build_db.py
 ```
 
 This regenerates `nsf_grfp.duckdb` and `awardees.json` from every TSV in `data/`.
@@ -75,7 +83,7 @@ This regenerates `nsf_grfp.duckdb` and `awardees.json` from every TSV in `data/`
 ### Query the database directly
 
 ```sh
-uv run --with duckdb python -c "
+uv run python -c "
 import duckdb
 con = duckdb.connect('nsf_grfp.duckdb', read_only=True)
 rows = con.execute('''
@@ -96,7 +104,7 @@ Or open an interactive shell with `duckdb nsf_grfp.duckdb`.
 
 ```sh
 uv run scrape_all_years.py
-uv run --with duckdb --with loguru python build_db.py
+uv run python build_db.py
 ```
 
 `scrape_all_years.py` only fetches years that are missing or have a near-empty file in `data/`, so re-runs are cheap and incremental. Add any new year automatically once research.gov exposes it in the dropdown.

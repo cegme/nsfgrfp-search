@@ -1,0 +1,39 @@
+[project]
+name = "nsfgrfp-search"
+version = "0.2.0"
+description = "Scraper, DuckDB build, and static search UI for NSF GRFP awardees and honorable mentions (1952-2026)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Christan Grant", email = "christangrant@gmail.com" },
+]
+keywords = ["nsf", "grfp", "fellowship", "scraper", "duckdb"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Database",
+  "Topic :: Internet :: WWW/HTTP",
+]
+
+dependencies = [
+  "duckdb>=1.0",
+  "loguru>=0.7",
+  "requests>=2.31",
+]
+
+[project.urls]
+Homepage = "https://github.com/cegme/nsfgrfp-search"
+Source = "https://github.com/cegme/nsfgrfp-search"
+Author = "https://ceg.me"
+
+[tool.uv]
+# The repo ships flat scripts and static data rather than an installable Python
+# module, so tell uv to manage dependencies without building a wheel.
+package = false
