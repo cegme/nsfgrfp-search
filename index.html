@@ -162,6 +162,175 @@
     .controls { grid-template-columns: 1fr; }
     thead th, tbody td { padding: 6px 8px; font-size: 13px; }
   }
+
+  /* Trends / charts */
+  .trends { margin: 4px 0 24px; }
+  .trends-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .trends-header h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .trends-header p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .btn {
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--panel);
+    color: var(--fg);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn.primary:hover { background: #0d4f8c; color: #fff; }
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    gap: 16px;
+  }
+  .chart-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chart-card-top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .chart-q {
+    font-size: 14px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--panel);
+    width: 100%;
+  }
+  .chart-q:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .chart-remove {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+  .chart-remove:hover { color: #a00; border-color: #f3cdcd; background: #fff5f5; }
+  .chart-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .chart-controls label {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .chart-controls select {
+    font-size: 13px;
+    padding: 4px 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel);
+    color: var(--fg);
+  }
+  .chart-body {
+    background: #fcfcfd;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    min-height: 140px;
+  }
+  .chart-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .chart-row {
+    display: grid;
+    grid-template-columns: minmax(110px, 160px) 1fr 52px;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    padding: 2px 0;
+  }
+  .chart-row:hover { background: #f3f4f6; border-radius: 3px; }
+  .chart-row-label {
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--fg);
+  }
+  .chart-row-bar-wrap {
+    display: flex;
+    height: 16px;
+    background: #eef0f3;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .chart-row-bar { height: 100%; transition: width 0.18s ease; }
+  .chart-row-bar-awarded { background: var(--award); }
+  .chart-row-bar-hm { background: var(--hm); }
+  .chart-row-value {
+    font-weight: 600;
+    color: var(--muted);
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+  }
+  .chart-empty {
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .chart-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend { display: inline-flex; gap: 12px; }
+  .legend span { display: inline-flex; align-items: center; }
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px;
+  }
+  @media (max-width: 720px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-row { grid-template-columns: minmax(90px, 130px) 1fr 44px; }
+  }
 </style>
 </head>
 <body>
@@ -176,7 +345,7 @@
 
 <div class="container">
   <div class="controls">
-    <input id="q" type="search" placeholder="Search by name, institution, field, keyword&hellip; (e.g. MIT, neuroscience, Stanford)" autocomplete="off" spellcheck="false" />
+    <input id="q" type="search" placeholder="Search name, institution, field&hellip; space = AND, comma = OR (e.g. MIT biology, Stanford chemistry)" autocomplete="off" spellcheck="false" />
     <div class="filter">
       <label for="type">Type:</label>
       <select id="type">
@@ -201,6 +370,17 @@
       </select>
     </div>
   </div>
+
+  <section class="trends">
+    <div class="trends-header">
+      <div>
+        <h2>Trends</h2>
+        <p>Type a keyword to filter a chart; each chart filters independently so you can compare two trends side by side.</p>
+      </div>
+      <button id="add-chart" class="btn primary" type="button">+ Add chart</button>
+    </div>
+    <div id="charts" class="charts-grid"></div>
+  </section>
 
   <div class="stats" id="stats">Loading&hellip;</div>
 
@@ -248,6 +428,8 @@
       }
       populateFieldFilter(data);
       applyFilters();
+      addChart({ dimension: "fb" });
+      addChart({ dimension: "b", topN: 15 });
     })
     .catch((err) => {
       statsEl.textContent = "Failed to load awardees.json: " + err;
@@ -262,23 +444,45 @@
     }
   }
 
+  // Commas separate OR groups; whitespace within a group is AND. "mit, stanford"
+  // matches rows that contain "mit" OR "stanford"; "mit biology" matches rows
+  // that contain both "mit" AND "biology".
   function tokenize(q) {
-    return q.toLowerCase().split(/\s+/).map((t) => t.trim()).filter(Boolean);
+    return q
+      .toLowerCase()
+      .split(",")
+      .map((g) => g.trim().split(/\s+/).filter(Boolean))
+      .filter((g) => g.length > 0);
+  }
+
+  function matchGroups(haystack, groups) {
+    if (!groups.length) return true;
+    for (const group of groups) {
+      let all = true;
+      for (const tok of group) {
+        if (!haystack.includes(tok)) { all = false; break; }
+      }
+      if (all) return true;
+    }
+    return false;
+  }
+
+  function flatTokens(groups) {
+    const out = [];
+    for (const g of groups) for (const t of g) out.push(t);
+    return out;
   }
 
   function applyFilters() {
-    const tokens = state.tokens;
+    const groups = state.tokens;
     const tf = state.typeFilter;
     const ff = state.fieldFilter;
     const out = [];
     for (const r of state.data) {
       if (tf && r.t !== tf) continue;
       if (ff && r.fb !== ff) continue;
-      let ok = true;
-      for (const tok of tokens) {
-        if (!r._h.includes(tok)) { ok = false; break; }
-      }
-      if (ok) out.push(r);
+      if (!matchGroups(r._h, groups)) continue;
+      out.push(r);
     }
     sortRows(out);
     state.filtered = out;
@@ -304,9 +508,10 @@
   }
 
   function highlight(text) {
-    if (!state.tokens.length) return escape(text);
+    const flat = flatTokens(state.tokens);
+    if (!flat.length) return escape(text);
     let esc = escape(text);
-    for (const tok of state.tokens) {
+    for (const tok of flat) {
       if (!tok) continue;
       const re = new RegExp("(" + tok.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
       esc = esc.replace(re, "<mark>$1</mark>");
@@ -399,6 +604,170 @@
   });
   prevEl.addEventListener("click", () => { if (state.page > 0) { state.page--; render(); window.scrollTo(0, 0); } });
   nextEl.addEventListener("click", () => { state.page++; render(); window.scrollTo(0, 0); });
+
+  // ---- Charts ----
+  const DIMS = [
+    { key: "fb", label: "Broad field" },
+    { key: "fs", label: "Specific field" },
+    { key: "b", label: "Baccalaureate" },
+    { key: "c", label: "Current institution" },
+  ];
+  const charts = [];
+  let chartIdSeq = 0;
+  const chartsEl = $("charts");
+  const addChartBtn = $("add-chart");
+
+  function addChart(init) {
+    const chart = Object.assign({
+      id: ++chartIdSeq,
+      query: "",
+      tokens: [],
+      typeFilter: "",
+      dimension: "fb",
+      topN: 10,
+    }, init || {});
+    charts.push(chart);
+    mountChart(chart);
+    drawChart(chart);
+    return chart;
+  }
+
+  function removeChart(id) {
+    const idx = charts.findIndex((c) => c.id === id);
+    if (idx < 0) return;
+    charts.splice(idx, 1);
+    const el = chartsEl.querySelector('[data-chart-id="' + id + '"]');
+    if (el) el.remove();
+  }
+
+  function mountChart(chart) {
+    const el = document.createElement("div");
+    el.className = "chart-card";
+    el.dataset.chartId = String(chart.id);
+    const dimOptions = DIMS
+      .map((d) => `<option value="${d.key}">${d.label}</option>`)
+      .join("");
+    el.innerHTML =
+      '<div class="chart-card-top">' +
+        '<input type="search" class="chart-q" placeholder="Filter&hellip; space = AND, comma = OR (e.g. MIT, Stanford)" autocomplete="off" spellcheck="false" />' +
+        '<button class="chart-remove" type="button" title="Remove chart" aria-label="Remove chart">&times;</button>' +
+      '</div>' +
+      '<div class="chart-controls">' +
+        '<label>Group by <select class="chart-dim">' + dimOptions + '</select></label>' +
+        '<label>Type <select class="chart-type">' +
+          '<option value="">All</option>' +
+          '<option value="A">Awarded</option>' +
+          '<option value="H">Honorable mention</option>' +
+        '</select></label>' +
+        '<label>Top <select class="chart-topn">' +
+          '<option value="5">5</option>' +
+          '<option value="10">10</option>' +
+          '<option value="15">15</option>' +
+          '<option value="20">20</option>' +
+          '<option value="30">30</option>' +
+          '<option value="50">50</option>' +
+        '</select></label>' +
+      '</div>' +
+      '<div class="chart-body"></div>' +
+      '<div class="chart-footer-row">' +
+        '<span class="chart-count"></span>' +
+        '<span class="legend">' +
+          '<span><span class="legend-dot" style="background:var(--award)"></span>Awarded</span>' +
+          '<span><span class="legend-dot" style="background:var(--hm)"></span>HM</span>' +
+        '</span>' +
+      '</div>';
+    chartsEl.appendChild(el);
+
+    const qIn = el.querySelector(".chart-q");
+    const dimIn = el.querySelector(".chart-dim");
+    const typeIn = el.querySelector(".chart-type");
+    const topNIn = el.querySelector(".chart-topn");
+    const removeBtn = el.querySelector(".chart-remove");
+
+    qIn.value = chart.query;
+    dimIn.value = chart.dimension;
+    typeIn.value = chart.typeFilter;
+    topNIn.value = String(chart.topN);
+
+    let debounceQ;
+    qIn.addEventListener("input", () => {
+      clearTimeout(debounceQ);
+      debounceQ = setTimeout(() => {
+        chart.query = qIn.value;
+        chart.tokens = tokenize(chart.query);
+        drawChart(chart);
+      }, 80);
+    });
+    dimIn.addEventListener("change", () => { chart.dimension = dimIn.value; drawChart(chart); });
+    typeIn.addEventListener("change", () => { chart.typeFilter = typeIn.value; drawChart(chart); });
+    topNIn.addEventListener("change", () => { chart.topN = parseInt(topNIn.value, 10); drawChart(chart); });
+    removeBtn.addEventListener("click", () => removeChart(chart.id));
+  }
+
+  function filterForChart(chart) {
+    const out = [];
+    const groups = chart.tokens;
+    const tf = chart.typeFilter;
+    for (const r of state.data) {
+      if (tf && r.t !== tf) continue;
+      if (!matchGroups(r._h, groups)) continue;
+      out.push(r);
+    }
+    return out;
+  }
+
+  function aggregateForChart(chart, rows) {
+    const counts = new Map();
+    for (const r of rows) {
+      const k = r[chart.dimension] || "(unknown)";
+      let c = counts.get(k);
+      if (!c) { c = { A: 0, H: 0, total: 0 }; counts.set(k, c); }
+      if (r.t === "A") c.A++; else if (r.t === "H") c.H++;
+      c.total++;
+    }
+    return [...counts.entries()]
+      .sort((a, b) => b[1].total - a[1].total)
+      .slice(0, chart.topN);
+  }
+
+  function drawChart(chart) {
+    const el = chartsEl.querySelector('[data-chart-id="' + chart.id + '"]');
+    if (!el) return;
+    const bodyEl = el.querySelector(".chart-body");
+    const countEl = el.querySelector(".chart-count");
+
+    const rows = filterForChart(chart);
+    const agg = aggregateForChart(chart, rows);
+
+    const noun = rows.length === 1 ? "person" : "people";
+    countEl.textContent = rows.length.toLocaleString() + " matching " + noun;
+
+    if (agg.length === 0) {
+      bodyEl.innerHTML = '<div class="chart-empty">No matches. Try fewer keywords or a different group-by.</div>';
+      return;
+    }
+
+    const max = Math.max(1, ...agg.map((e) => e[1].total));
+    let html = '<div class="chart-rows">';
+    for (const [key, c] of agg) {
+      const pctA = (c.A / max) * 100;
+      const pctH = (c.H / max) * 100;
+      const tip = key + "  —  Awarded: " + c.A + ", HM: " + c.H + ", Total: " + c.total;
+      html +=
+        '<div class="chart-row" title="' + escape(tip) + '">' +
+          '<div class="chart-row-label">' + escape(key) + '</div>' +
+          '<div class="chart-row-bar-wrap">' +
+            '<div class="chart-row-bar chart-row-bar-awarded" style="width:' + pctA + '%"></div>' +
+            '<div class="chart-row-bar chart-row-bar-hm" style="width:' + pctH + '%"></div>' +
+          '</div>' +
+          '<div class="chart-row-value">' + c.total.toLocaleString() + '</div>' +
+        '</div>';
+    }
+    html += '</div>';
+    bodyEl.innerHTML = html;
+  }
+
+  addChartBtn.addEventListener("click", () => addChart());
 })();
 </script>
 </body>

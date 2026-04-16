@@ -101,11 +101,12 @@ The response is ISO-8859-1 even though the server labels it `application/vnd.ms-
 
 ## Site features
 
-- Multi-token substring search across name, both institutions, and field.
+- Substring search across name, both institutions, and field. Spaces act as AND, commas act as OR (e.g. `MIT biology, Stanford chemistry` returns MIT-biology people plus Stanford-chemistry people).
 - Filter by award type (awarded / honorable mention) and broad field.
 - Sortable columns; click a header to toggle direction.
 - Match highlighting on each keyword.
 - Paginated at 50 rows per page.
+- Trends panel above the results with stacked awarded / honorable-mention bars. Each chart has its own comma-OR filter, a grouping dimension (broad field, specific field, baccalaureate, current institution), a type filter, and a top-N selector. Add more charts to compare trends side by side.
 - All filtering runs client-side over a 593 KB JSON payload. No network after initial load.
 
 ## Re-scrape a fresh year
