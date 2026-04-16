@@ -2,7 +2,7 @@
 
 Every publicly listed NSF Graduate Research Fellowship Program awardee and honorable mention from 1952 through 2026, a DuckDB database over the full set, and a single-page website with keyword search, filters, and comparable trend charts.
 
-![Two trend charts side by side comparing top baccalaureate institutions for California vs Florida, above the paginated search results table](screenshot.png)
+![Default view: a broad-field distribution chart and a 2021-2026 year-over-time chart above the paginated 2026 search results](screenshot.png)
 
 Data snapshot date: 2026-04-16.
 Source: <https://www.research.gov/grfp/AwardeeList.do?method=loadAwardeeList>.

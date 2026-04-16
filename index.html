@@ -170,7 +170,7 @@
   }
 
   /* Trends / charts */
-  .trends { margin: 4px 0 24px; }
+  .trends { margin: 0 0 28px; }
   .trends-header {
     display: flex;
     justify-content: space-between;
@@ -350,8 +350,19 @@
 </header>
 
 <div class="container">
+  <section class="trends">
+    <div class="trends-header">
+      <div>
+        <h2>Trends</h2>
+        <p>Type a keyword (or year) to filter a chart; each chart filters independently so you can compare two trends side by side.</p>
+      </div>
+      <button id="add-chart" class="btn primary" type="button">+ Add chart</button>
+    </div>
+    <div id="charts" class="charts-grid"></div>
+  </section>
+
   <div class="controls">
-    <input id="q" type="search" placeholder="Search name, institution, field&hellip; space = AND, comma = OR (e.g. MIT biology, Stanford chemistry)" autocomplete="off" spellcheck="false" />
+    <input id="q" type="search" placeholder="Search name, institution, field, year&hellip; space = AND, comma = OR (e.g. MIT 2024, Stanford 2024)" autocomplete="off" spellcheck="false" />
     <div class="filter">
       <label for="type">Type:</label>
       <select id="type">
@@ -380,17 +391,6 @@
       </select>
     </div>
   </div>
-
-  <section class="trends">
-    <div class="trends-header">
-      <div>
-        <h2>Trends</h2>
-        <p>Type a keyword to filter a chart; each chart filters independently so you can compare two trends side by side.</p>
-      </div>
-      <button id="add-chart" class="btn primary" type="button">+ Add chart</button>
-    </div>
-    <div id="charts" class="charts-grid"></div>
-  </section>
 
   <div class="stats" id="stats">Loading&hellip;</div>
 
@@ -464,12 +464,21 @@
       }
       state.data = data;
       state.years = years;
+      // Default to the most recent year so the page opens with current-year
+      // results; users can widen to "All years" from the dropdown.
+      state.yearFilter = years.length ? String(years[0]) : "";
       populateFieldFilter(data);
       populateYearFilter(years);
+      yearEl.value = state.yearFilter;
       updateFooterCounts(data);
       applyFilters();
       addChart({ dimension: "fb" });
-      addChart({ dimension: "y", topN: 75 });
+      addChart({
+        dimension: "y",
+        topN: 75,
+        yearFilter: "",
+        query: "2026, 2025, 2024, 2023, 2022, 2021",
+      });
     })
     .catch((err) => {
       statsEl.textContent = "Failed to load awardees.json: " + err;
@@ -685,15 +694,19 @@
   const addChartBtn = $("add-chart");
 
   function addChart(init) {
+    const defaultYear = state.years.length ? String(state.years[0]) : "";
     const chart = Object.assign({
       id: ++chartIdSeq,
       query: "",
       tokens: [],
       typeFilter: "",
-      yearFilter: "",
+      yearFilter: defaultYear,
       dimension: "fb",
       topN: 10,
     }, init || {});
+    if (chart.query && chart.tokens.length === 0) {
+      chart.tokens = tokenize(chart.query);
+    }
     charts.push(chart);
     mountChart(chart);
     drawChart(chart);
@@ -717,7 +730,7 @@
       .join("");
     el.innerHTML =
       '<div class="chart-card-top">' +
-        '<input type="search" class="chart-q" placeholder="Filter&hellip; space = AND, comma = OR (e.g. MIT, Stanford)" autocomplete="off" spellcheck="false" />' +
+        '<input type="search" class="chart-q" placeholder="Filter by name, institution, field, year&hellip; space = AND, comma = OR (e.g. MIT 2024, Stanford)" autocomplete="off" spellcheck="false" />' +
         '<button class="chart-remove" type="button" title="Remove chart" aria-label="Remove chart">&times;</button>' +
       '</div>' +
       '<div class="chart-controls">' +
